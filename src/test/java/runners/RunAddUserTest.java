@@ -11,12 +11,14 @@ import org.openqa.selenium.chrome.ChromeDriverService;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/features",
-        glue = "com.example.springcucumber.spring_cucumber",
+//        glue = "com.example.springcucumber.spring_cucumber",
 //        tags = "@add",
         snippets = SnippetType.CAMELCASE
 )
@@ -24,12 +26,13 @@ import java.io.IOException;
 public class RunAddUserTest {
     private static ChromeDriverService service;
     protected static WebDriver driver;
+    private static Properties props = new Properties();
 
     @BeforeClass
     public static void createAndStartService() throws IOException {
+        props.load(new FileInputStream(new File("src/main/resources/application.properties")));
         service = new ChromeDriverService.Builder()
-//                .usingDriverExecutable(new File("C:\\Users\\tanch\\Downloads\\chromedriver_win32 (1)\\chromedriver.exe"))
-                .usingDriverExecutable(new File("/home/slava/Downloads/chromedriver_linux64/chromedriver"))
+                .usingDriverExecutable(new File(props.getProperty("web.driver.linux.google")))
                 .usingAnyFreePort()
                 .build();
         service.start();

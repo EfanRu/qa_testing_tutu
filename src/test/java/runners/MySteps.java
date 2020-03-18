@@ -7,129 +7,95 @@ import cucumber.api.PendingException;
 import cucumber.api.java.ru.Допустим;
 import cucumber.api.java.ru.Если;
 import cucumber.api.java.ru.Тогда;
-import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.PropertySource;
-//import org.springframework.core.env.Environment;
-//import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 //@ContextConfiguration(classes = SpringCucumberApplication.class)
 //@PropertySource("classpath:application.properties")
 //@RunWith(SpringJUnit4ClassRunner.class)
 public class MySteps {
-//    @Autowired
-//    private UserService userService;
-//    @Autowired
-//    private Environment env;
     private WebDriver driver = RunAddUserTest.driver;
 
-    @Допустим("^мы авторизовались под админом$")
-    public void мы_авторизовались_под_админом() throws Throwable {
+    @Допустим("^мы зашли на сайт \"([^\"]*)\"$")
+    public void мы_зашли_на_сайт(String arg1) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         try {
-            driver.get("http://localhost:8081/logout");
-            driver.get("http://localhost:8081/login");
-//            driver.findElement(By.name("username")).sendKeys(env.getRequiredProperty("db.default.admin.login"));
-//            driver.findElement(By.name("password")).sendKeys(env.getRequiredProperty("db.default.admin.password"));
-            driver.findElement(By.className("btn")).click();
+            driver.get("http://" + arg1);
+            WebElement form = new WebDriverWait(
+                    driver,
+                    Duration.ofSeconds(5).getSeconds())
+                    .until(ExpectedConditions
+                            .elementToBeClickable(By
+                                    .linkText("Ж/д билеты")));
         } catch (Exception e) {
             e.printStackTrace();
             throw new PendingException();
         }
     }
 
-    @Допустим("^зашли в меню добавления пользователя$")
-    public void зашли_в_меню_добавления_пользователя() throws Throwable {
+    @Допустим("^зашли в меню заказ Ж/Д билетов$")
+    public void зашли_в_меню_заказ_Ж_Д_билетов() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         try {
-            System.out.println("In menu add user");
+            driver.findElement(By.linkText("Ж/д билеты")).click();
+            driver.manage().timeouts().implicitlyWait(5 , TimeUnit.SECONDS);
+//            WebElement form = new WebDriverWait(
+//                    driver,
+//                    Duration.ofSeconds(10).getSeconds())
+//                    .until(ExpectedConditions
+//                            .elementToBeClickable(By
+//                                    .className("input_field j-station_input  j-station_input_from")));
         } catch (Exception e) {
-            e.printStackTrace();
             throw new PendingException();
         }
     }
 
-    @Если("^на сервере не существует такого же логина \"([^\"]*)\"$")
-    public void на_сервере_не_существует_такого_же_логина(String arg1) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-//        try{
-//            User user = userService.getUserByLogin(arg1);
-//            if (!user.getLogin().equals("")) {
-//                userService.deleteUser(user.getId().toString());
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            throw new PendingException();
-//        }
-    }
-
-    @Тогда("^пользователь с логином \"([^\"]*)\" и паролем \"([^\"]*)\" добавляется корретно$")
-    public void пользователь_с_логином_и_паролем_добавляется_корретно(String arg1, String arg2) throws Throwable {
+    @Если("^имееются свободные места на сегодняшнее число из \"([^\"]*)\" в \"([^\"]*)\"$")
+    public void имееются_свободные_места_на_сегодняшнее_число(String arg1, String arg2) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         try {
-            driver.findElement(By.id("navAddForm")).click();
-            driver.manage().timeouts().implicitlyWait(200, TimeUnit.MILLISECONDS);
-            driver.findElement(By.id("addFirstName")).sendKeys(arg1);
-            driver.findElement(By.id("addLastName")).sendKeys(arg2);
-            driver.findElement(By.id("addPhoneNumber")).sendKeys("999");
-            driver.findElement(By.id("addLogin")).sendKeys(arg1);
-            driver.findElement(By.id("addPassword")).sendKeys(arg2);
-            driver.findElement(By.id("butAddUser")).submit();
-            //working only thread sleep
-            Thread.currentThread().sleep(200);
-            driver.findElement(By.id("navLinkTable")).click();
+            Date date = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.mm.yyyy");
 
-//            User user = userService.getUserByLogin(arg1);
-//
-//            if (user.getLogin().equals("")) {
-//                throw new Exception("Exception in add user with unique login");
-//            }
+            driver
+                    .findElement(By.name("schedule_station_from"))
+                    .sendKeys(arg1);
+            driver
+                    .findElement(By.name("schedule_station_to"))
+                    .sendKeys(arg2);
+            driver
+                    .findElement(By.className("input_field j-permanent_open j-input j-date_to"))
+                    .sendKeys(dateFormat.format(date));
         } catch (Exception e) {
             e.printStackTrace();
             throw new PendingException();
         }
     }
 
-    @Если("^на сервере существует такой же логин \"([^\"]*)\" с паролем \"([^\"]*)\"$")
-    public void на_сервере_существует_такой_же_логин_с_паролем(String arg1, String arg2) throws Throwable {
+    @Тогда("^сформировать заказ на билет из \"([^\"]*)\" в \"([^\"]*)\"$")
+    public void сформировать_заказ_на_билет_из_в(String arg1, String arg2) throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-//        try{
-//            if (!userService.getUserByLogin(arg1).getLogin().equals(arg1)) {
-//                User user = new User(
-//                        arg1,
-//                        arg2,
-//                        arg1,
-//                        arg2,
-//                        999L,
-//                        new Role("admin")
-//                        );
-//                userService.addUser(user);
-//            }
-//        } catch (Exception e) {
-//            throw new PendingException();
-//        }
+        throw new PendingException();
     }
 
-    @Тогда("^пользователь с логином \"([^\"]*)\" и паролем \"([^\"]*)\" не добавляется$")
-    public void пользователь_с_логином_и_паролем_не_добавляется(String arg1, String arg2) throws Throwable {
+    @Если("^сделать заказ на вчерашнюю дату$")
+    public void сделать_заказ_на_вчерашнюю_дату() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
-        try{
-            driver.findElement(By.id("navAddForm")).click();
-            driver.manage().timeouts().implicitlyWait(200, TimeUnit.MILLISECONDS);
-            driver.findElement(By.id("addFirstName")).sendKeys(arg1);
-            driver.findElement(By.id("addLastName")).sendKeys(arg2);
-            driver.findElement(By.id("addPhoneNumber")).sendKeys("999");
-            driver.findElement(By.id("addLogin")).sendKeys(arg1);
-            driver.findElement(By.id("addPassword")).sendKeys(arg2);
-            driver.findElement(By.id("butAddUser")).submit();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new PendingException();
-        }
+        throw new PendingException();
     }
+
+    @Тогда("^должно появиться сообщение об ошибке$")
+    public void должно_появиться_сообщение_об_ошибке() throws Throwable {
+        // Write code here that turns the phrase above into concrete actions
+        throw new PendingException();
+    }
+
 }
