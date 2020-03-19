@@ -19,7 +19,7 @@ import java.util.Properties;
 @CucumberOptions(
         features = "src/test/features",
 //        glue = "com.example.springcucumber.spring_cucumber",
-//        tags = "@Working-test",
+//        tags = "@add",
         snippets = SnippetType.CAMELCASE
 )
 @SpringBootTest
@@ -32,7 +32,7 @@ public class RunAddUserTest {
     public static void createAndStartService() throws IOException {
         props.load(new FileInputStream(new File("src/main/resources/application.properties")));
         service = new ChromeDriverService.Builder()
-                .usingDriverExecutable(new File(props.getProperty("web.driver.linux.google")))
+                .usingDriverExecutable(new File(props.getProperty("web.driver.windows.google")))
                 .usingAnyFreePort()
                 .build();
         service.start();
