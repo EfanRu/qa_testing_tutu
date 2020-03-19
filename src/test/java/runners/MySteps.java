@@ -7,6 +7,7 @@ import cucumber.api.PendingException;
 import cucumber.api.java.ru.Допустим;
 import cucumber.api.java.ru.Если;
 import cucumber.api.java.ru.Тогда;
+import org.junit.Ignore;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -72,8 +73,12 @@ public class MySteps {
                     .findElement(By.name("schedule_station_to"))
                     .sendKeys(arg2);
             driver
-                    .findElement(By.className("input_field j-permanent_open j-input j-date_to"))
+                    .findElement(By.ByXPath.xpath("//input[@class='input_field j-permanent_open j-input j-date_to']"))
                     .sendKeys(dateFormat.format(date));
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            driver
+                    .findElement(By.ByXPath.xpath("//button[@class='b-button__arrow__button j-button j-button-submit _title j-submit_button _blue']/span[@class='inner_wrapper']/span[@class='spinner']"))
+                    .click();
         } catch (Exception e) {
             e.printStackTrace();
             throw new PendingException();
