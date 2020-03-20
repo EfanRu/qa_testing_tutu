@@ -32,7 +32,7 @@ public class RunAddUserTest {
     public static void createAndStartService() throws IOException {
         props.load(new FileInputStream(new File("src/main/resources/application.properties")));
         service = new ChromeDriverService.Builder()
-                .usingDriverExecutable(new File(props.getProperty("web.driver.windows.google")))
+                .usingDriverExecutable(new File(props.getProperty("web.driver.linux.google")))
                 .usingAnyFreePort()
                 .build();
         service.start();

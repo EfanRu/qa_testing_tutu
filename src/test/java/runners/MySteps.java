@@ -12,7 +12,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.xmlunit.builder.Input;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -47,14 +49,8 @@ public class MySteps {
     public void зашли_в_меню_заказ_Ж_Д_билетов() throws Throwable {
         // Write code here that turns the phrase above into concrete actions
         try {
-            driver.findElement(By.linkText("Ж/д билеты")).click();
             driver.manage().timeouts().implicitlyWait(5 , TimeUnit.SECONDS);
-//            WebElement form = new WebDriverWait(
-//                    driver,
-//                    Duration.ofSeconds(10).getSeconds())
-//                    .until(ExpectedConditions
-//                            .elementToBeClickable(By
-//                                    .className("input_field j-station_input  j-station_input_from")));
+            driver.findElement(By.linkText("Ж/д билеты")).click();
         } catch (Exception e) {
             throw new PendingException();
         }
@@ -65,35 +61,41 @@ public class MySteps {
         // Write code here that turns the phrase above into concrete actions
         try {
             Date date = new Date();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.mm.yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
             String dataOfTest = dateFormat.format(date);
             WebElement webElementStationFrom = driver.findElement(By.name("schedule_station_from"));
             WebElement webElementStationTo = driver.findElement(By.name("schedule_station_to"));
             WebElement webElementDate = driver.findElement(By.ByXPath.xpath("//input[@class='input_field j-permanent_open j-input j-date_to']"));
+            WebDriverWait wait = new WebDriverWait(driver, 5);
+
+            wait.until(ExpectedConditions.elementToBeClickable(webElementStationFrom));
 
             for (int i = 0; i < arg1.length() - 1; i++) {
-                webElementStationFrom.sendKeys(arg1.substring(i, i + 1));
-                driver.manage().timeouts().implicitlyWait(200, TimeUnit.MILLISECONDS);
+                String subChar = arg1.substring(i, i + 1);
+                String subWord = arg1.substring(0, i + 1);
+                webElementStationFrom.sendKeys(subChar);
+                wait.until(ExpectedConditions.attributeContains(webElementStationFrom, "value", subWord));
             }
 
             for (int i = 0; i < arg2.length() - 1; i++) {
-                webElementStationTo.sendKeys(arg2.substring(i, i + 1));
-                driver.manage().timeouts().implicitlyWait(200, TimeUnit.MILLISECONDS);
+                String sub = arg2.substring(i, i + 1);
+                String subWord = arg2.substring(0, i + 1);
+                webElementStationTo.sendKeys(sub);
+                wait.until(ExpectedConditions.attributeContains(webElementStationTo, "value", subWord));
             }
+
+            driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
+
+            webElementDate.click();
+//            Thread.sleep(300);
 
             for (int i = 0; i < dataOfTest.length() - 1; i++) {
-                webElementDate.sendKeys(dataOfTest.substring(i, i + 1));
-                driver.manage().timeouts().implicitlyWait(200, TimeUnit.MILLISECONDS);
+                String sub = dataOfTest.substring(i, i + 1);
+                String subWord = dataOfTest.substring(0, i + 1);
+                webElementDate.sendKeys(sub);
+                wait.until(ExpectedConditions.attributeContains(webElementDate, "value", subWord));
             }
 
-//            driver
-//                    .findElement(By.name("schedule_station_to"))
-//                    .sendKeys(arg2);
-//            driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS);
-//            driver
-//                    .findElement(By.ByXPath.xpath("//input[@class='input_field j-permanent_open j-input j-date_to']"))
-//                    .sendKeys(dateFormat.format(date));
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             driver
                     .findElement(By.ByXPath.xpath("//button[@class='b-button__arrow__button j-button j-button-submit _title j-submit_button _blue']/span[@class='inner_wrapper']/span[@class='spinner']"))
                     .click();
